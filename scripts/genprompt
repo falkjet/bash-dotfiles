@@ -1,0 +1,58 @@
+#!/bin/env python
+
+import os
+from os import path
+
+color1 = 30
+color2 = 7
+
+separator = "🭐 "
+if os.environ.get("TERM_PROGRAM") == "vscode":
+    separator = ""
+if not os.environ.get("TERM_PROGRAM"):
+    separator = ""
+reset = "\\[\x1b(B\x1b[m\\]"
+
+
+def c_to_fg(code):
+    if isinstance(code, int):
+        return f"\\[\u001b[38;5;{code}m\\]"
+    return code
+
+
+def c_to_bg(code):
+    if isinstance(code, int):
+        return f"\\[\u001b[48;5;{code}m\\]"
+    return code
+
+
+blocks = [("  ", color1, color2)]
+
+path = os.getcwd().replace(os.environ["HOME"], "~")
+if path == "~":
+    path = " "
+else:
+    path = " " + path
+
+blocks.append((path, color2, color1))
+
+ps1 = [reset]
+for block, nextblock in zip(blocks, blocks[1:] + [None]):
+    ps1.append(c_to_fg(block[1]) + c_to_bg(block[2]))
+    ps1.append(block[0])
+    if nextblock is None:
+        ps1.append(" " + reset + c_to_fg(block[2]) + separator)
+    else:
+        ps1.append(c_to_fg(block[2]) + " " + c_to_bg(nextblock[2]) + separator)
+
+ps1.append(reset)
+
+title = path
+if os.environ.get("SSH_CONNECTION"):
+    lhost, lport, rhost, rport = os.environ['SSH_CONNECTION'].split(' ')
+    addr = rhost
+    if rport != "22":
+        addr = addr + ":" + rport
+    title = f"ssh://{addr} {title}"
+title = f"\\[\x1b]0;{title}\a\\]"
+print("\n", *ps1, "\n", c_to_fg(color1), "❯ ", reset, title, sep="")

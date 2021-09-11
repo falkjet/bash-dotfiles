@@ -1,0 +1,13 @@
+#!/bin/bash
+# shebang used to detect syntax highlighting
+
+_update_ps1() {
+    PS1=$(python ~/.bashrc.d/scripts/genprompt)
+}
+
+if [[ $TERM != linux && ! $PROMPT_COMMAND =~ _update_ps1 ]]; then
+    PROMPT_COMMAND="_update_ps1; $PROMPT_COMMAND"
+fi
+
+
+
