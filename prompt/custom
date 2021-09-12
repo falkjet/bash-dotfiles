@@ -2,7 +2,7 @@
 # shebang used to detect syntax highlighting
 
 _update_ps1() {
-    PS1=$(python ~/.bashrc.d/scripts/genprompt)
+    PS1=$(python "$BASH_CONFIG_DIR/scripts/genprompt")
 }
 
 if [[ $TERM != linux && ! $PROMPT_COMMAND =~ _update_ps1 ]]; then
